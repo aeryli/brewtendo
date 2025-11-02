@@ -68,9 +68,10 @@ body{
     transition:transform .12s ease,box-shadow .12s ease;
     font-family:'RodinBold','Rodin',Arial,sans-serif;
 }
+/*
 .language-btn:hover{transform:translateY(-2px);box-shadow:0 6px 12px rgba(0,0,0,0.28)}
 
-/* Dropdown with emoji flags */
+/* Dropdown with emoji flags 
 .language-dropdown{
     position:absolute;
     right:12px;
@@ -93,9 +94,9 @@ body{
 }
 .language-option:hover{background:#fff5e6;color:#ff6600}
 .language-emoji{
-    font-size:20px; /* emoji flag size */
+    font-size:20px; /* emoji flag size 
     line-height:1;
-}
+}*/
 
 /* Page container & content */
 .container{max-width:900px;margin:0 auto;padding:30px 20px}
@@ -196,6 +197,7 @@ body{
     <a id="sidebarFaq" href="#">FAQ</a>
   </nav>
 
+  <!--
   <div style="position:relative;">
     <button class="language-btn" id="languageBtn" aria-expanded="false" aria-controls="languageDropdown">
       <span id="languageText">Language</span>
@@ -206,6 +208,7 @@ body{
       <div class="language-option" data-lang="es" role="menuitem"><span class="language-emoji">🇪🇸</span>Español</div>
     </div>
   </div>
+  -->
 </div>
 
 <!-- Page content -->
@@ -321,6 +324,7 @@ Port: 8888</div>
 
 <script>
 // language dropdown toggle & translations
+/* disabled for now
 const languageBtn = document.getElementById('languageBtn');
 const languageDropdown = document.getElementById('languageDropdown');
 const langOptions = document.querySelectorAll('.language-option');
@@ -352,7 +356,7 @@ langOptions.forEach(opt => {
     }
     languageDropdown.classList.remove('show');
   });
-});
+});*/
 </script>
 </body>
 </html>
