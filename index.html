@@ -34,7 +34,7 @@ body{
 /* Top bar (consistent with installation guide) */
 .top-bar{
     background: linear-gradient(to bottom,#ff9944 0%,#ff8833 100%);
-    padding:10px 16px;
+    padding:8px 16px;
     display:flex;
     align-items:center;
     justify-content:space-between;
@@ -485,24 +485,72 @@ body{
     </div>
 
     <!-- Background music -->
-    <audio id="bgMusic" loop>
+    <audio id="bgMusic" loop autoplay>
         <source src="/data/08. June 2011 (3DS).mp3" type="audio/mpeg">
     </audio>
 
     <script>
-        // Auto-play background music with user interaction
+        // Background music with persistence across pages - AGGRESSIVE AUTOPLAY
         const bgMusic = document.getElementById('bgMusic');
         bgMusic.volume = 0.3; // Set to 30% volume
         
-        // Try to play on page load
-        bgMusic.play().catch(() => {
-            // If autoplay fails (browser policy), play on first user interaction
-            const playOnInteraction = () => {
-                bgMusic.play();
-                document.removeEventListener('click', playOnInteraction);
-                document.removeEventListener('keydown', playOnInteraction);
-            };
-            document.addEventListener('click', playOnInteraction);
-            document.addEventListener('keydown', playOnInteraction);
+        // Restore playback position and state from previous page
+        const savedTime = sessionStorage.getItem('musicTime');
+        const wasPlaying = sessionStorage.getItem('musicPlaying');
+        
+        if (savedTime) {
+            bgMusic.currentTime = parseFloat(savedTime);
+        }
+        
+        // Aggressively try to play music
+        const tryPlay = () => {
+            const playPromise = bgMusic.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    sessionStorage.setItem('musicPlaying', 'true');
+                }).catch(() => {
+                    // Silently retry
+                    setTimeout(tryPlay, 100);
+                });
+            }
+        };
+        
+        // Try immediately
+        tryPlay();
+        
+        // Add multiple event listeners to catch ANY user interaction
+        const events = ['click', 'keydown', 'touchstart', 'touchend', 'mousedown', 'scroll'];
+        const playOnce = () => {
+            if (bgMusic.paused) {
+                tryPlay();
+            }
+            // Remove all listeners after first successful play
+            if (!bgMusic.paused) {
+                events.forEach(event => {
+                    document.removeEventListener(event, playOnce);
+                });
+            }
+        };
+        
+        events.forEach(event => {
+            document.addEventListener(event, playOnce, { once: false });
         });
+        
+        // Try again after a short delay
+        setTimeout(tryPlay, 500);
+        setTimeout(tryPlay, 1000);
+        
+        // Save state before leaving page
+        window.addEventListener('beforeunload', () => {
+            sessionStorage.setItem('musicTime', bgMusic.currentTime);
+            sessionStorage.setItem('musicPlaying', !bgMusic.paused ? 'true' : 'false');
+        });
+        
+        // Update time periodically
+        setInterval(() => {
+            if (!bgMusic.paused) {
+                sessionStorage.setItem('musicTime', bgMusic.currentTime);
+                sessionStorage.setItem('musicPlaying', 'true');
+            }
+        }, 1000);
     </script>
